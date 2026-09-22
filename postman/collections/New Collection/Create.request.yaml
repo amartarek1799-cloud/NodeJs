@@ -1,0 +1,13 @@
+$kind: http-request
+url: localhost:3000/products
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"title\": \"hello world\",\r
+
+    \    \"decript\": \"how are you\"\r
+
+    }"
+order: 5000

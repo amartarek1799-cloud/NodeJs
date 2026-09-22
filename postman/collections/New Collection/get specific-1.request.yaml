@@ -1,0 +1,5 @@
+$kind: http-request
+name: get specific
+url: localhost:3000/products/6ab2bdafc2346aea71108452
+method: DELETE
+order: 1000
