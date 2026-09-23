@@ -114,7 +114,7 @@ app.post("/register", async (req, res) => {
   try {
     const { email, password, role } = req.body; // استقبال الـ role اختياريًا
 
-    const findUser = await User.findOne({ email });
+    const findUser = await user.findOne({ email });
     if (findUser) return res.status(400).send("wrong email or password");
 
     const hashPassword = await bcrypt.hash(password, 10);
