@@ -3,6 +3,8 @@ const app = express();
 const port = 3000;
 const cors = require("cors");
 app.use(cors());
+const bcrypt = require("bcrypt");
+const user = require("./models/usersInfo");
 
 app.set("view engine", "ejs");
 app.use(express.json());
@@ -90,6 +92,67 @@ app.get("/articles", async (req, res) => {
     allArticles: articles,
   });
 });
+
+app.post("/register", async (req, res) => {
+  try {
+    const { email, password, role } = req.body; // استقبال الـ role اختياريًا
+
+    const findUser = await User.findOne({ email });
+    if (findUser) return res.status(400).send("الحساب موجود بالفعل");
+
+    const hashPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new user({
+      email,
+      password: hashPassword,
+      role: role || "user", // إذا لم يتم تحديد دور، يصبح مستخدم عادي تلقائيًا
+    });
+
+    await newUser.save();
+    res.status(201).send("تم التسجيل بنجاح");
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const findUser = await user.findOne({ email: email });
+    if (!findUser) {
+      return res.status(400).send("wrong email or password !");
+    }
+    const matchPassword = await bcrypt.compare(password, findUser.password);
+    if (matchPassword) {
+      res.json({
+        message: "you logged in successfully",
+        role: findUser.role,
+        email: findUser.email,
+      });
+    } else {
+      res.status(400).send("wrong email or password !");
+    }
+  } catch (error) {
+    res.status(400).send({ message: error.message });
+  }
+});
+
+// دالة التحقق من الأدمن المخصص
+async function isAdmin(req, res, next) {
+  const userEmail = req.headers.email; // الإيميل المرسل من المستخدم
+
+  // ضع إيميلك الشخصي هنا مكان admin@mywebsite.com
+  const primaryAdminEmail = "admin@amar.com";
+
+  if (userEmail === primaryAdminEmail) {
+    next(); // إذا تطابق الإيميل، اسمح له بالمرور فوراً كأدمن
+  } else {
+    res
+      .status(403)
+      .send("غير مسموح! هذا الإجراء مخصص للأدمن الأساسي للموقع فقط.");
+  }
+}
 
 app.listen(port, () => {
   console.log(`i am listening now to port: ${port}`);
