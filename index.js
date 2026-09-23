@@ -91,4 +91,6 @@ app.get("/articles", async (req, res) => {
   });
 });
 
-module.exports = app;
+app.listen(port, () => {
+  console.log(`i am listening now to port: ${port}`);
+});
