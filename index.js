@@ -93,6 +93,22 @@ app.get("/articles", async (req, res) => {
   });
 });
 
+// دالة التحقق من الأدمن المخصص
+async function isAdmin(req, res, next) {
+  const userEmail = req.headers.email; // الإيميل المرسل من المستخدم
+
+  // ضع إيميلك الشخصي هنا مكان admin@mywebsite.com
+  const primaryAdminEmail = "admin@amar.com";
+
+  if (userEmail === primaryAdminEmail) {
+    next(); // إذا تطابق الإيميل، اسمح له بالمرور فوراً كأدمن
+  } else {
+    res
+      .status(403)
+      .send("غير مسموح! هذا الإجراء مخصص للأدمن الأساسي للموقع فقط.");
+  }
+}
+
 app.post("/register", async (req, res) => {
   try {
     const { email, password, role } = req.body; // استقبال الـ role اختياريًا
@@ -137,22 +153,6 @@ app.post("/login", async (req, res) => {
     res.status(400).send({ message: error.message });
   }
 });
-
-// دالة التحقق من الأدمن المخصص
-async function isAdmin(req, res, next) {
-  const userEmail = req.headers.email; // الإيميل المرسل من المستخدم
-
-  // ضع إيميلك الشخصي هنا مكان admin@mywebsite.com
-  const primaryAdminEmail = "admin@amar.com";
-
-  if (userEmail === primaryAdminEmail) {
-    next(); // إذا تطابق الإيميل، اسمح له بالمرور فوراً كأدمن
-  } else {
-    res
-      .status(403)
-      .send("غير مسموح! هذا الإجراء مخصص للأدمن الأساسي للموقع فقط.");
-  }
-}
 
 app.listen(port, () => {
   console.log(`i am listening now to port: ${port}`);
