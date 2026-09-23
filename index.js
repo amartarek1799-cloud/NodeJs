@@ -40,7 +40,7 @@ app.post("/products", async (req, res) => {
   res.json(newArticle);
 });
 
-app.get("/products", async (req, res) => {
+app.get("/products", isUser, async (req, res) => {
   const products = await Article.find();
   res.json(products);
 });
@@ -57,7 +57,7 @@ app.get("/products/:productsId", async (req, res) => {
   }
 });
 
-app.delete("/products/:productsId", async (req, res) => {
+app.delete("/products/:productsId", isAdmin, async (req, res) => {
   const id = req.params.productsId;
   try {
     const products = await Article.findByIdAndDelete(id);
@@ -108,6 +108,27 @@ async function isAdmin(req, res, next) {
       .send("غير مسموح! هذا الإجراء مخصص للأدمن الأساسي للموقع فقط.");
   }
 }
+
+// دالة التحقق من أن المستخدم مسجل دخول (يملك حساب في قاعدة البيانات)
+async function isUser(req, res, next) {
+  const userEmail = req.headers.email; // سنستقبل الإيميل في الهيدرز من الريأكت
+
+  if (!userEmail) {
+    return res.status(401).json({ error: "يجب تسجيل الدخول أولاً لرؤية هذه البيانات" });
+  }
+
+  try {
+    const checkUser = await user.findOne({ email: userEmail });
+    if (checkUser) {
+      next(); // الحساب موجود، اسمح له بالمرور
+    } else {
+      res.status(401).json({ error: "حساب غير صالح، يرجى إعادة تسجيل الدخول" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "خطأ في السيرفر" });
+  }
+}
+
 
 
 app.post("/register", async (req, res) => {
