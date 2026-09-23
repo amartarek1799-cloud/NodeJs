@@ -84,6 +84,11 @@ app.put("/products/:productsId", async (req, res) => {
   }
 });
 
+app.get("/articles", async (req, res) => {
+  const articles = await Article.find();
+  res.render("articles.ejs", {
+    allArticles: articles,
+  });
+});
 
 module.exports = app;
-
