@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 const port = 3000;
+const cors = require("cors");
+app.use(cors());
 
 app.set("view engine", "ejs");
 app.use(express.json());
@@ -67,21 +69,19 @@ app.delete("/products/:productsId", async (req, res) => {
 });
 
 app.put("/products/:productsId", async (req, res) => {
-    const id = req.params.productsId;
-    try{
-        const products = await Article.findByIdAndUpdate(
-            id,
-            {title: req.body.title, description: req.body.decript},
-            {new: true}
-        );
-        res.json(products);
-        console.log(error);
-    } catch (error) {
-        console.log("error while updateing", id);
-        return res.json(error);
-    }
-})
-
-app.listen(port, () => {
-  console.log(`i am listening now for port: ${port}`);
+  const id = req.params.productsId;
+  try {
+    const products = await Article.findByIdAndUpdate(
+      id,
+      { title: req.body.title, description: req.body.decript },
+      { new: true },
+    );
+    res.json(products);
+    console.log(error);
+  } catch (error) {
+    console.log("error while updateing", id);
+    return res.json(error);
+  }
 });
+
+module.exports = app;
