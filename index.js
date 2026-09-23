@@ -109,6 +109,7 @@ async function isAdmin(req, res, next) {
   }
 }
 
+
 app.post("/register", async (req, res) => {
   try {
     const { email, password, role } = req.body; // استقبال الـ role اختياريًا
